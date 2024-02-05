@@ -73,21 +73,21 @@ class XRayDataset(Dataset):
         
         filenames = []
         labelnames = []
+        valid_set_num = 0
         for i, (x, y) in enumerate(gkf.split(_filenames, ys, groups)):
             if is_train:
                 # 0번을 validation dataset으로 사용합니다.
-                if i == 0:
+                if i == valid_set_num:
                     continue
                     
                 filenames += list(_filenames[y])
                 labelnames += list(_labelnames[y])
             
             else:
-                filenames = list(_filenames[y])
-                labelnames = list(_labelnames[y])
-                
-                # skip i > 0
-                break
+                if i == valid_set_num:
+                    filenames = list(_filenames[y])
+                    labelnames = list(_labelnames[y])
+                    break
         
         self.IMAGE_ROOT = IMAGE_ROOT
         self.LABEL_ROOT = LABEL_ROOT
