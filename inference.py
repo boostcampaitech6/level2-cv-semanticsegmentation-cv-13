@@ -102,8 +102,9 @@ if __name__ == '__main__':
     DATA_ROOT = config['DATA_ROOT']
     IMAGE_ROOT = f"{DATA_ROOT}/test/DCM"
     SAVED_DIR = config['SAVED_DIR']
-
-    model = torch.load(os.path.join(SAVED_DIR, "model.pt"))
+    EXP_NAME = config['EXP_NAME']
+    RESULT_DIR = os.path.join(SAVED_DIR, EXP_NAME)
+    model = torch.load(os.path.join(RESULT_DIR, "model.pt"))
 
     tf = A.Resize(512, 512)
     test_dataset = XRayInferenceDataset(IMAGE_ROOT, transforms=tf)
@@ -127,4 +128,5 @@ if __name__ == '__main__':
 
     if not os.path.exists('./result'):                                                           
         os.makedirs('./result')
-    df.to_csv("./result/output.csv", index=False)
+    f_name = EXP_NAME + '_output.csv'
+    df.to_csv(os.path.join('result', f_name), index=False)
