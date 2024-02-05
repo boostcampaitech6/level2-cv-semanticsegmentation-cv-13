@@ -1,0 +1,9 @@
+DATA_ROOT: "/data/ephemeral/home/data"
+SAVED_DIR: "/data/ephemeral/home/model"
+EXP_NAME: "temp"
+CAMPER_ID: "T0000"
+BATCH_SIZE: 8
+LR: 0.0001
+RANDOM_SEED: 21
+NUM_EPOCHS: 5
+VAL_EVERY: 1
