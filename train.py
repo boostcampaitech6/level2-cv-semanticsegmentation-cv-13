@@ -155,8 +155,6 @@ def train(model, data_loader, val_loader, criterion, optimizer):
                 print(f"Save model in {SAVED_DIR}")
                 best_dice = dice
                 save_model(model)
-        
-        torch.cuda.empty_cache()
 
 
 if __name__ == '__main__':
@@ -192,7 +190,7 @@ if __name__ == '__main__':
     # 주의: validation data는 이미지 크기가 크기 때문에 `num_wokers`는 커지면 메모리 에러가 발생할 수 있습니다.
     valid_loader = DataLoader(
         dataset=valid_dataset, 
-        batch_size=8,
+        batch_size=2,
         shuffle=False,
         num_workers=0,
         drop_last=False
