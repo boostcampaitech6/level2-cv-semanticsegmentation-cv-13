@@ -49,7 +49,7 @@ def dice_coef(y_true, y_pred):
 
 
 def save_model(model, file_name='model.pt'):
-    output_path = os.path.join(SAVED_DIR, file_name)
+    output_path = os.path.join(RESULT_DIR, file_name)
     torch.save(model, output_path)
 
 
@@ -165,9 +165,11 @@ if __name__ == '__main__':
     IMAGE_ROOT = f"{DATA_ROOT}/train/DCM"
     LABEL_ROOT = f"{DATA_ROOT}/train/outputs_json"
     SAVED_DIR = config['SAVED_DIR']
+    EXP_NAME = config['EXP_NAME']
+    RESULT_DIR = os.path.join(SAVED_DIR, EXP_NAME)
 
-    if not os.path.exists(SAVED_DIR):                                                           
-        os.makedirs(SAVED_DIR)
+    if not os.path.exists(RESULT_DIR):                                                           
+        os.makedirs(RESULT_DIR)
 
     BATCH_SIZE = config['BATCH_SIZE']
     LR = config['LR']
@@ -211,7 +213,6 @@ if __name__ == '__main__':
     set_seed()
 
     CAMPER_ID = config['CAMPER_ID']
-    EXP_NAME = config['EXP_NAME']
-    wandb.init(project='Boost Camp Lv2-3', name=f"{CAMPER_ID}-{EXP_NAME}", config=config)
+    wandb.init(project='Boost Camp Lv2-3',entity='frostings', name=f"{CAMPER_ID}-{EXP_NAME}", config=config)
     
     train(model, train_loader, valid_loader, criterion, optimizer)
