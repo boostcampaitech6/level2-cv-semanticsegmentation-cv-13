@@ -91,10 +91,11 @@ class DiceMetric(BaseMetric):
         class_table_data = PrettyTable()
         for key, val in ret_metrics_class.items():
             class_table_data.add_column(key, val)
+
+        print(class_table_data)
         
         metrics = {
             "mDice": torch.mean(dices_per_class).item(),
-            "ClassDice": class_table_data
         }
 
         return metrics
