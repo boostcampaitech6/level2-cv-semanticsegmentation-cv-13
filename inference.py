@@ -104,9 +104,10 @@ if __name__ == '__main__':
     SAVED_DIR = config['SAVED_DIR']
     EXP_NAME = config['EXP_NAME']
     RESULT_DIR = os.path.join(SAVED_DIR, EXP_NAME)
+    RESIZE = config['RESIZE']
     model = torch.load(os.path.join(RESULT_DIR, "model.pt"))
 
-    tf = A.Resize(512, 512)
+    tf = A.Resize(RESIZE, RESIZE)
     test_dataset = XRayInferenceDataset(IMAGE_ROOT, transforms=tf)
     test_loader = DataLoader(
         dataset=test_dataset, 
