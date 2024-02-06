@@ -176,8 +176,10 @@ if __name__ == '__main__':
     RANDOM_SEED = config['RANDOM_SEED']
     NUM_EPOCHS = config['NUM_EPOCHS']
     VAL_EVERY = config['VAL_EVERY']
-
-    tf = A.Resize(512, 512)
+    RESIZE = config['RESIZE']
+    
+    #resize
+    tf = A.Resize(RESIZE, RESIZE)
     train_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=True, transforms=tf)
     valid_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=False, transforms=tf)
 
