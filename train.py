@@ -26,6 +26,8 @@ from torchvision import models
 # visualization
 import matplotlib.pyplot as plt
 from dataloader import XRayDataset
+from psuedo_label import preprocess, clear_test_data_in_train_path
+
 
 CLASSES = [
     'finger-1', 'finger-2', 'finger-3', 'finger-4', 'finger-5',
@@ -176,6 +178,13 @@ if __name__ == '__main__':
     RANDOM_SEED = config['RANDOM_SEED']
     NUM_EPOCHS = config['NUM_EPOCHS']
     VAL_EVERY = config['VAL_EVERY']
+    PSUEDOLABEL_FLAG = config['PSEUDO_LABEL']
+    
+    if PSUEDOLABEL_FLAG:
+        preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
+    else:
+        clear_test_data_in_train_path(DATA_ROOT)
+
     RESIZE = config['RESIZE']
     
     #resize
