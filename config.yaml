@@ -1,11 +1,12 @@
 DATA_ROOT: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/data"
 SAVED_DIR: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/model"
-EXP_NAME: "TEMP"
-CAMPER_ID: "T0000"
+EXP_NAME: "temp"
+CAMPER_ID: "0000"
 BATCH_SIZE: 8
 LR: 0.0001
 RANDOM_SEED: 21
 NUM_EPOCHS: 50
 VAL_EVERY: 5
+RESIZE: 512
 PSEUDO_LABEL: True
 OUTPUT_CSV_PATH: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/result/output.csv"

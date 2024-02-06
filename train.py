@@ -185,7 +185,10 @@ if __name__ == '__main__':
     else:
         clear_test_data_in_train_path(DATA_ROOT)
 
-    tf = A.Resize(512, 512)
+    RESIZE = config['RESIZE']
+    
+    #resize
+    tf = A.Resize(RESIZE, RESIZE)
     train_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=True, transforms=tf)
     valid_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=False, transforms=tf)
 

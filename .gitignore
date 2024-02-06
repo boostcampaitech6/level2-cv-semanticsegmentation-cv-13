@@ -4,3 +4,4 @@ eda/vis_res
 wandb
 __pycache__
 model
+venv
