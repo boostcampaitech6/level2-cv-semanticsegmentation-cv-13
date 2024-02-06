@@ -5,7 +5,7 @@ crop_size = (1024, 1024)
 train_pipeline = [
             dict(type='LoadImageFromFile'),
             dict(type='LoadXRayAnnotations'),
-            dict(type='Resize', scale=(1450, 1450)),
+            dict(type='Resize', scale=(512, 512)),
             # dict(type='Albu', transforms=albu_train_transforms),
             dict(type='TransposeAnnotations'),
             dict(type='PackSegInputs')
