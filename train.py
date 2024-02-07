@@ -218,6 +218,15 @@ if __name__ == '__main__':
         drop_last=False
     )
 
+    # smp 모델 예시 (Unet)
+    # 출력 label 수 정의 (classes=29)
+    # model = smp.Unet(
+    #     encoder_name="efficientnet-b0", 
+    #     encoder_weights="imagenet",     
+    #     in_channels=3,                  
+    #     classes=29,                     
+    # )
+
     model = models.segmentation.fcn_resnet50(pretrained=True)
 
     # output class 개수를 dataset에 맞도록 수정합니다.
