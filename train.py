@@ -83,7 +83,6 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
             images, masks = images.cuda(), masks.cuda()         
             model = model.cuda()
             
-            # outputs = model(images) if USE_SMP else model(images)['out']
             outputs = model(images)
             
             output_h, output_w = outputs.size(-2), outputs.size(-1)
@@ -134,8 +133,6 @@ def train(model, data_loader, val_loader, criterion, optimizer):
             images, masks = images.cuda(), masks.cuda()
             model = model.cuda()
             
-            #smp모듈 사용할 때와 안할 때 outputs수정
-            # outputs = model(images) if USE_SMP else model(images)['out']
             outputs = model(images)
             
             # loss를 계산합니다.
@@ -186,8 +183,11 @@ if __name__ == '__main__':
     NUM_EPOCHS = config['NUM_EPOCHS']
     VAL_EVERY = config['VAL_EVERY']
     PSUEDOLABEL_FLAG = config['PSEUDO_LABEL']
-    USE_SMP = config['USE_SMP']
-    MODEL = config["MODEL"]
+
+    # model 정의
+    TYPE = config['TYPE']
+    MODEL = config['MODEL']
+    ENCODER = config['ENCODER']
     
     # clear_test_data_in_train_path(DATA_ROOT)
     # if PSUEDOLABEL_FLAG:
@@ -223,7 +223,7 @@ if __name__ == '__main__':
     )
 
     # model을 정의
-    model = create_model(MODEL, CLASSES)
+    model = create_model(TYPE, MODEL, ENCODER, CLASSES)
     
     # Loss function을 정의합니다.
     criterion = nn.BCEWithLogitsLoss()

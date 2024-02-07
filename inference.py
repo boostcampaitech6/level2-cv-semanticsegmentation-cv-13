@@ -81,7 +81,6 @@ def test(model, data_loader, thr=0.5):
         for step, (images, image_names) in tqdm(enumerate(data_loader), total=len(data_loader)):
             images = images.cuda()
                 
-            # outputs = model(images) if USE_SMP else model(images)['out']
             outputs = model(images)
 
             outputs = F.interpolate(outputs, size=(2048, 2048), mode="bilinear")
