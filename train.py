@@ -22,6 +22,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import models
+import segmentation_models_pytorch as smp
 
 # visualization
 import matplotlib.pyplot as plt
@@ -68,6 +69,7 @@ def set_seed():
 
 def validation(epoch, model, data_loader, criterion, thr=0.5):
     print(f'Start validation #{epoch:2d}')
+    set_seed()
     model.eval()
 
     dices = []
@@ -80,7 +82,7 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
             images, masks = images.cuda(), masks.cuda()         
             model = model.cuda()
             
-            outputs = model(images)['out']
+            outputs = model(images) if USE_SMP else model(images)['out']
             
             output_h, output_w = outputs.size(-2), outputs.size(-1)
             mask_h, mask_w = masks.size(-2), masks.size(-1)
@@ -118,7 +120,7 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
 
 def train(model, data_loader, val_loader, criterion, optimizer):
     print(f'Start training..')
-    
+    set_seed()
     n_class = len(CLASSES)
     best_dice = 0.
     
@@ -130,7 +132,8 @@ def train(model, data_loader, val_loader, criterion, optimizer):
             images, masks = images.cuda(), masks.cuda()
             model = model.cuda()
             
-            outputs = model(images)['out']
+            #smp모듈 사용할 때와 안할 때 outputs수정
+            outputs = model(images) if USE_SMP else model(images)['out']
             
             # loss를 계산합니다.
             loss = criterion(outputs, masks)
@@ -180,6 +183,7 @@ if __name__ == '__main__':
     NUM_EPOCHS = config['NUM_EPOCHS']
     VAL_EVERY = config['VAL_EVERY']
     PSUEDOLABEL_FLAG = config['PSEUDO_LABEL']
+    USE_SMP = config['USE_SMP']
     
     # clear_test_data_in_train_path(DATA_ROOT)
     # if PSUEDOLABEL_FLAG:
