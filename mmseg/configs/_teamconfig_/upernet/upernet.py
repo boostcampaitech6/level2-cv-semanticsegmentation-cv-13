@@ -7,7 +7,7 @@ data_preprocessor = dict(
     seg_pad_val=255,
     size=(512, 512))
 model = dict(
-    type='EncoderDecoder',
+    type='EncoderDecoderWithoutArgmax',
     data_preprocessor=dict(
         type='SegDataPreProcessor',
         mean=[30.85484335154295, 30.85484335154295, 30.85484335154295],
@@ -43,7 +43,7 @@ model = dict(
             'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/swin/swin_large_patch4_window12_384_22k_20220412-6580f57d.pth'
         )),
     decode_head=dict(
-        type='UPerHead',
+        type='UPerHeadWithoutAccuracy',
         in_channels=[192, 384, 768, 1536],
         in_index=[0, 1, 2, 3],
         pool_scales=(1, 2, 3, 6),
@@ -55,7 +55,7 @@ model = dict(
         loss_decode=dict(
             type='FocalLoss', use_sigmoid=True, loss_weight=1.0)),
     auxiliary_head=dict(
-        type='FCNHead',
+        type='FCNHeadWithoutAccuracy',
         in_channels=768,
         in_index=2,
         channels=256,
