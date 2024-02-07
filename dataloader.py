@@ -24,6 +24,10 @@ from torchvision import models
 # visualization
 import matplotlib.pyplot as plt
 
+# import 
+from psuedo_label import get_folder_label_name
+
+
 CLASSES = [
     'finger-1', 'finger-2', 'finger-3', 'finger-4', 'finger-5',
     'finger-6', 'finger-7', 'finger-8', 'finger-9', 'finger-10',
@@ -37,7 +41,7 @@ IND2CLASS = {v: k for k, v in CLASS2IND.items()}
 
 
 class XRayDataset(Dataset):
-    def __init__(self, IMAGE_ROOT, LABEL_ROOT, is_train=True, transforms=None):
+    def __init__(self, IMAGE_ROOT, LABEL_ROOT, is_train=True, transforms=None, psuedo_flag=False):
         pngs = {
             os.path.relpath(os.path.join(root, fname), start=IMAGE_ROOT)
             for root, _dirs, files in os.walk(IMAGE_ROOT)
@@ -82,13 +86,19 @@ class XRayDataset(Dataset):
                     
                 filenames += list(_filenames[y])
                 labelnames += list(_labelnames[y])
-            
+
             else:
                 if i == valid_set_num:
                     filenames = list(_filenames[y])
                     labelnames = list(_labelnames[y])
                     break
         
+        # 파일을 옮기고 filename에 psuedo data를 추가한다
+        if psuedo_flag:
+            psuedo_filenames, psuedo_labelnames = get_folder_label_name("data")
+            filenames += psuedo_filenames
+            labelnames += psuedo_labelnames
+
         self.IMAGE_ROOT = IMAGE_ROOT
         self.LABEL_ROOT = LABEL_ROOT
         self.filenames = filenames

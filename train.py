@@ -26,7 +26,7 @@ from torchvision import models
 # visualization
 import matplotlib.pyplot as plt
 from dataloader import XRayDataset
-from psuedo_label import preprocess, clear_test_data_in_train_path
+from psuedo_label import preprocess, clear_test_data_in_train_path, copy_test_data_to_train_path
 from augmentation import SobelFilter
 
 
@@ -180,22 +180,36 @@ if __name__ == '__main__':
     NUM_EPOCHS = config['NUM_EPOCHS']
     VAL_EVERY = config['VAL_EVERY']
     PSUEDOLABEL_FLAG = config['PSEUDO_LABEL']
-    
-    # clear_test_data_in_train_path(DATA_ROOT)
-    # if PSUEDOLABEL_FLAG:
-    #     preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
-
     RESIZE = config['RESIZE']
     
-    #resize
-    # tf = A.Resize(RESIZE, RESIZE)
-    tf = A.Compose([
-        SobelFilter(prob=0.5),
-        A.Resize(RESIZE, RESIZE),
-    ])
+    clear_test_data_in_train_path(DATA_ROOT)
     
-    train_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=True, transforms=tf)
-    valid_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=False, transforms=tf)
+    # resize
+    tf = A.Resize(RESIZE, RESIZE)
+    # tf = A.Compose([
+    #     SobelFilter(prob=0.5),
+    #     A.Resize(RESIZE, RESIZE),
+    # ])
+    
+    train_dataset = XRayDataset(
+        IMAGE_ROOT, 
+        LABEL_ROOT, 
+        is_train=True, 
+        transforms=tf,
+        psuedo_flag=PSUEDOLABEL_FLAG,
+    )
+    valid_dataset = XRayDataset(
+        IMAGE_ROOT, 
+        LABEL_ROOT, 
+        is_train=False, 
+        transforms=tf,
+    )
+    
+    print(len(train_dataset), len(valid_dataset))
+
+    if PSUEDOLABEL_FLAG:
+        preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
+        copy_test_data_to_train_path("data")
 
     train_loader = DataLoader(
         dataset=train_dataset, 
