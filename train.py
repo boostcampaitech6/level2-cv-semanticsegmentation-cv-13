@@ -26,7 +26,7 @@ from torchvision import models
 # visualization
 import matplotlib.pyplot as plt
 from dataloader import XRayDataset
-from psuedo_label import preprocess, clear_test_data_in_train_path, copy_test_data_to_train_path
+from psuedo_label import *
 from augmentation import SobelFilter
 
 
@@ -183,6 +183,8 @@ if __name__ == '__main__':
     RESIZE = config['RESIZE']
     
     clear_test_data_in_train_path(DATA_ROOT)
+    if PSUEDOLABEL_FLAG:
+        preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
     
     # resize
     tf = A.Resize(RESIZE, RESIZE)
@@ -190,7 +192,7 @@ if __name__ == '__main__':
     #     SobelFilter(prob=0.5),
     #     A.Resize(RESIZE, RESIZE),
     # ])
-    
+
     train_dataset = XRayDataset(
         IMAGE_ROOT, 
         LABEL_ROOT, 
@@ -205,11 +207,10 @@ if __name__ == '__main__':
         transforms=tf,
     )
     
-    print(len(train_dataset), len(valid_dataset))
-
     if PSUEDOLABEL_FLAG:
-        preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
         copy_test_data_to_train_path("data")
+
+    print(len(train_dataset), len(valid_dataset))
 
     train_loader = DataLoader(
         dataset=train_dataset, 

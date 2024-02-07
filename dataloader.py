@@ -25,7 +25,7 @@ from torchvision import models
 import matplotlib.pyplot as plt
 
 # import 
-from psuedo_label import get_folder_label_name
+from psuedo_label import *
 
 
 CLASSES = [
