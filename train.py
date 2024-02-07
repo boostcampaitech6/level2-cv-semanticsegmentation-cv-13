@@ -23,6 +23,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import models
 import segmentation_models_pytorch as smp
+from model import create_model
 
 # visualization
 import matplotlib.pyplot as plt
@@ -82,7 +83,8 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
             images, masks = images.cuda(), masks.cuda()         
             model = model.cuda()
             
-            outputs = model(images) if USE_SMP else model(images)['out']
+            # outputs = model(images) if USE_SMP else model(images)['out']
+            outputs = model(images)
             
             output_h, output_w = outputs.size(-2), outputs.size(-1)
             mask_h, mask_w = masks.size(-2), masks.size(-1)
@@ -133,7 +135,8 @@ def train(model, data_loader, val_loader, criterion, optimizer):
             model = model.cuda()
             
             #smp모듈 사용할 때와 안할 때 outputs수정
-            outputs = model(images) if USE_SMP else model(images)['out']
+            # outputs = model(images) if USE_SMP else model(images)['out']
+            outputs = model(images)
             
             # loss를 계산합니다.
             loss = criterion(outputs, masks)
@@ -184,6 +187,7 @@ if __name__ == '__main__':
     VAL_EVERY = config['VAL_EVERY']
     PSUEDOLABEL_FLAG = config['PSEUDO_LABEL']
     USE_SMP = config['USE_SMP']
+    MODEL = config["MODEL"]
     
     # clear_test_data_in_train_path(DATA_ROOT)
     # if PSUEDOLABEL_FLAG:
@@ -218,20 +222,9 @@ if __name__ == '__main__':
         drop_last=False
     )
 
-    # smp 모델 예시 (Unet)
-    # 출력 label 수 정의 (classes=29)
-    # model = smp.Unet(
-    #     encoder_name="efficientnet-b0", 
-    #     encoder_weights="imagenet",     
-    #     in_channels=3,                  
-    #     classes=29,                     
-    # )
-
-    model = models.segmentation.fcn_resnet50(pretrained=True)
-
-    # output class 개수를 dataset에 맞도록 수정합니다.
-    model.classifier[4] = nn.Conv2d(512, len(CLASSES), kernel_size=1)
-
+    # model을 정의
+    model = create_model(MODEL, CLASSES)
+    
     # Loss function을 정의합니다.
     criterion = nn.BCEWithLogitsLoss()
 

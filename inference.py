@@ -81,8 +81,9 @@ def test(model, data_loader, thr=0.5):
         for step, (images, image_names) in tqdm(enumerate(data_loader), total=len(data_loader)):
             images = images.cuda()
                 
-            outputs = model(images) if USE_SMP else model(images)['out']
-            
+            # outputs = model(images) if USE_SMP else model(images)['out']
+            outputs = model(images)
+
             outputs = F.interpolate(outputs, size=(2048, 2048), mode="bilinear")
             outputs = torch.sigmoid(outputs)
             outputs = (outputs > thr).detach().cpu().numpy()
@@ -107,7 +108,6 @@ if __name__ == '__main__':
     EXP_NAME = config['EXP_NAME']
     RESULT_DIR = os.path.join(SAVED_DIR, EXP_NAME)
     RESIZE = config['RESIZE']
-    USE_SMP = config['USE_SMP']
     model = torch.load(os.path.join(RESULT_DIR, "model.pt"))
 
     tf = A.Resize(RESIZE, RESIZE)
