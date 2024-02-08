@@ -103,6 +103,21 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
             dice = dice_coef(outputs, masks)
             dices.append(dice)
                 
+            # B C H W            
+            if step == 0:
+                table_data = []
+                masks, preds = masks[0].numpy(), outputs[0].numpy()
+                for cls_idx in range(n_class):
+                    empty_mask = np.zeros((2048, 2048))
+                    mask = masks[cls_idx].astype(np.uint8) * 64
+                    pred = preds[cls_idx].astype(np.uint8) * 128
+                    
+                    empty_mask += mask
+                    empty_mask += pred
+                    table_data.append([IND2CLASS[cls_idx], wandb.Image(empty_mask)])
+                
+                wandb.log({f"val/{config['EXP_NAME']}": wandb.Table(columns=["cls_name", "img"], data=table_data)}, step=epoch)
+                
     dices = torch.cat(dices, 0)
     dices_per_class = torch.mean(dices, 0)
     dice_str = [
