@@ -102,7 +102,6 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
             
             dice = dice_coef(outputs, masks)
             dices.append(dice)
-            print(outputs.shape, masks.shape)
                 
             # B C H W            
             if (step+1)%10 == 0:
