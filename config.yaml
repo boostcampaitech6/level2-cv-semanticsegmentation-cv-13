@@ -13,7 +13,7 @@ OUTPUT_CSV_PATH: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/resu
 
 # torchvision or smp
 TYPE: smp
-# torchivision: fcn
+# torchivision: fcn, deeplab
 # smp: Unet, UnetPlusPlus, MAnet, Linknet, FPN, PSPNet, DeepLabV3, DeepLabV3Plus, PAN
 MODEL: Unet
 # https://github.com/qubvel/segmentation_models.pytorch?tab=readme-ov-file#encoders
