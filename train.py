@@ -28,7 +28,7 @@ from model import create_model
 # visualization
 import matplotlib.pyplot as plt
 from dataloader import XRayDataset
-from psuedo_label import preprocess, clear_test_data_in_train_path
+from psuedo_label import *
 from augmentation import SobelFilter
 
 
@@ -188,22 +188,37 @@ if __name__ == '__main__':
     TYPE = config['TYPE']
     MODEL = config['MODEL']
     ENCODER = config['ENCODER']
-    
-    # clear_test_data_in_train_path(DATA_ROOT)
-    # if PSUEDOLABEL_FLAG:
-    #     preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
-
     RESIZE = config['RESIZE']
     
-    #resize
-    # tf = A.Resize(RESIZE, RESIZE)
-    tf = A.Compose([
-        SobelFilter(prob=0.5),
-        A.Resize(RESIZE, RESIZE),
-    ])
+    clear_test_data_in_train_path(DATA_ROOT)
+    if PSUEDOLABEL_FLAG:
+        preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
     
-    train_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=True, transforms=tf)
-    valid_dataset = XRayDataset(IMAGE_ROOT, LABEL_ROOT, is_train=False, transforms=tf)
+    # resize
+    tf = A.Resize(RESIZE, RESIZE)
+    # tf = A.Compose([
+    #     SobelFilter(prob=0.5),
+    #     A.Resize(RESIZE, RESIZE),
+    # ])
+
+    train_dataset = XRayDataset(
+        IMAGE_ROOT, 
+        LABEL_ROOT, 
+        is_train=True, 
+        transforms=tf,
+        psuedo_flag=PSUEDOLABEL_FLAG,
+    )
+    valid_dataset = XRayDataset(
+        IMAGE_ROOT, 
+        LABEL_ROOT, 
+        is_train=False, 
+        transforms=tf,
+    )
+    
+    if PSUEDOLABEL_FLAG:
+        copy_test_data_to_train_path("data")
+
+    print(len(train_dataset), len(valid_dataset))
 
     train_loader = DataLoader(
         dataset=train_dataset, 

@@ -22,6 +22,14 @@ def rle_decode(mask_rle, shape):
     return img.reshape(shape)
 
 
+def get_folder_label_name(root_path: str):
+    test_img_paths = glob(os.path.join(root_path, "test", "*", "*", "*.png"))
+    test_json_paths = glob(os.path.join(root_path, "test", "*", "*", "*.json"))
+    test_filenames = [x.split('DCM/')[-1] for x in test_img_paths]
+    test_labelnames = [x.split('outputs_json/')[-1] for x in test_json_paths]
+    return test_filenames, test_labelnames
+
+
 def copy_test_data_to_train_path(root_path: str):
     print("Starting copy test images to train path")
     test_img_paths = glob(os.path.join(root_path, "test", "*", "*", "*.png"))
@@ -44,7 +52,7 @@ def copy_test_data_to_train_path(root_path: str):
         shutil.copy(
             test_json_path,
             os.path.join(root_path, "train", test_json_path.split("test/")[1])
-        )
+        )    
     print("Finish copy test images to train path")
     print("total_train_images: ", len(glob(os.path.join(root_path, "train", "*", "*", "*.png"))))
     print("total_train_jsons: ", len(glob(os.path.join(root_path, "train", "*", "*", "*.json"))))
@@ -129,7 +137,6 @@ def preprocess(
             json.dump(new_json, f)
     
     print("Finish convert output.csv to json")
-    copy_test_data_to_train_path(root_path)
 
 
 if __name__ == '__main__':
@@ -138,6 +145,4 @@ if __name__ == '__main__':
         
     root_path = config['DATA_ROOT']
     output_csv_path = os.path.join(config['OUTPUT_CSV_PATH'], "output.csv")
-    # preprocess(root_path, output_csv_path)
-    clear_test_data_in_train_path(root_path)
-    
+    clear_test_data_in_train_path(root_path)   
