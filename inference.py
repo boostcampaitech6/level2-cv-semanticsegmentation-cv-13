@@ -21,6 +21,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import models
+import segmentation_models_pytorch as smp
 
 # visualization
 import matplotlib.pyplot as plt
@@ -78,9 +79,10 @@ def test(model, data_loader, thr=0.5):
         n_class = len(CLASSES)
 
         for step, (images, image_names) in tqdm(enumerate(data_loader), total=len(data_loader)):
-            images = images.cuda()    
-            outputs = model(images)['out']
-            
+            images = images.cuda()
+                
+            outputs = model(images)
+
             outputs = F.interpolate(outputs, size=(2048, 2048), mode="bilinear")
             outputs = torch.sigmoid(outputs)
             outputs = (outputs > thr).detach().cpu().numpy()

@@ -22,6 +22,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import models
+import segmentation_models_pytorch as smp
+from model import create_model
 
 # visualization
 import matplotlib.pyplot as plt
@@ -68,6 +70,7 @@ def set_seed():
 
 def validation(epoch, model, data_loader, criterion, thr=0.5):
     print(f'Start validation #{epoch:2d}')
+    set_seed()
     model.eval()
 
     dices = []
@@ -80,7 +83,7 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
             images, masks = images.cuda(), masks.cuda()         
             model = model.cuda()
             
-            outputs = model(images)['out']
+            outputs = model(images)
             
             output_h, output_w = outputs.size(-2), outputs.size(-1)
             mask_h, mask_w = masks.size(-2), masks.size(-1)
@@ -118,7 +121,7 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
 
 def train(model, data_loader, val_loader, criterion, optimizer):
     print(f'Start training..')
-    
+    set_seed()
     n_class = len(CLASSES)
     best_dice = 0.
     
@@ -130,7 +133,7 @@ def train(model, data_loader, val_loader, criterion, optimizer):
             images, masks = images.cuda(), masks.cuda()
             model = model.cuda()
             
-            outputs = model(images)['out']
+            outputs = model(images)
             
             # loss를 계산합니다.
             loss = criterion(outputs, masks)
@@ -180,6 +183,11 @@ if __name__ == '__main__':
     NUM_EPOCHS = config['NUM_EPOCHS']
     VAL_EVERY = config['VAL_EVERY']
     PSUEDOLABEL_FLAG = config['PSEUDO_LABEL']
+
+    # model 정의
+    TYPE = config['TYPE']
+    MODEL = config['MODEL']
+    ENCODER = config['ENCODER']
     RESIZE = config['RESIZE']
     
     clear_test_data_in_train_path(DATA_ROOT)
@@ -229,11 +237,9 @@ if __name__ == '__main__':
         drop_last=False
     )
 
-    model = models.segmentation.fcn_resnet50(pretrained=True)
-
-    # output class 개수를 dataset에 맞도록 수정합니다.
-    model.classifier[4] = nn.Conv2d(512, len(CLASSES), kernel_size=1)
-
+    # model을 정의
+    model = create_model(TYPE, MODEL, ENCODER, CLASSES)
+    
     # Loss function을 정의합니다.
     criterion = nn.BCEWithLogitsLoss()
 
