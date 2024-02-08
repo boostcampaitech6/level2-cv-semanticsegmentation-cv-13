@@ -12,9 +12,9 @@ PSEUDO_LABEL: False
 OUTPUT_CSV_PATH: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/result/output.csv"
 
 # torchvision or smp
-TYPE: smp
+TYPE: torchvision
 # torchvision: fcn, deeplab
 # smp: Unet, UnetPlusPlus, MAnet, Linknet, FPN, PSPNet, DeepLabV3, DeepLabV3Plus, PAN
-MODEL: Unet
+MODEL: fcn
 # https://github.com/qubvel/segmentation_models.pytorch?tab=readme-ov-file#encoders
-ENCODER: efficientnet-b0
+ENCODER: null
