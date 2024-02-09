@@ -115,7 +115,7 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
                     empty_mask += mask
                     empty_mask += pred
                     table_data.append([IND2CLASS[cls_idx], wandb.Image(empty_mask)])
-                
+                table_data.append(["original", wandb.Image(images[0].permute(1, 2, 0).cpu().numpy())])
                 wandb.log({f"val/{config['EXP_NAME']}": wandb.Table(columns=["cls_name", "img"], data=table_data)}, step=epoch)
                 
     dices = torch.cat(dices, 0)
