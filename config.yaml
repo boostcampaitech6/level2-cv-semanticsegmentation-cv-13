@@ -8,8 +8,13 @@ RANDOM_SEED: 21
 NUM_EPOCHS: 50
 VAL_EVERY: 5
 RESIZE: 512
+
 PSEUDO_LABEL: False
 OUTPUT_CSV_PATH: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/result/output.csv"
+
+loss:
+  name: "cross_entropy"
+  params: null
 
 # torchvision or smp
 TYPE: torchvision

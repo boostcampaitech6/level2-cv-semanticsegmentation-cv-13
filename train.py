@@ -27,9 +27,11 @@ from model import create_model
 
 # visualization
 import matplotlib.pyplot as plt
+
 from dataloader import XRayDataset
 from psuedo_label import *
 from augmentation import SobelFilter
+from loss import create_criterion
 
 
 CLASSES = [
@@ -256,7 +258,12 @@ if __name__ == '__main__':
     model = create_model(TYPE, MODEL, ENCODER, CLASSES)
     
     # Loss function을 정의합니다.
-    criterion = nn.BCEWithLogitsLoss()
+    loss_config = config['loss']
+    loss_name = loss_config['name']
+    loss_params = loss_config['params'] or {}
+
+    # Criterion을 정의합니다.    
+    criterion = create_criterion(loss_name, **loss_params)
 
     # Optimizer를 정의합니다.
     optimizer = optim.Adam(params=model.parameters(), lr=LR, weight_decay=1e-6)
