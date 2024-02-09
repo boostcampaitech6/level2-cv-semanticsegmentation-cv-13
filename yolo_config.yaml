@@ -1,13 +1,16 @@
 wandb_option:
   project: Boost Camp Lv2-3
   entity: frostings
-  name: 0000-temp
+  name: temp
 train_option:
   epochs: 200
-  imgsz: 640
+  imgsz: 1024
   device: 0
   batch: 8
-  workers: 2
+  workers: 8
+  close_mosaic: 10
+  cos_lr: True
+  optimizer: Adam
 
 path: data  # dataset root dir
 train: yolo_train  # train images (relative to 'path') 4 images
