@@ -5,8 +5,8 @@ wandb_option:
 train_option:
   epochs: 200
   imgsz: 640
-  device: cpu
-  batch: 4
+  device: 0
+  batch: 8
   workers: 2
 
 path: data  # dataset root dir
