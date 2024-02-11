@@ -192,7 +192,7 @@ def yolo_to_coco(root_path: str, method: str, json_path: str):
     
 
 if __name__ == '__main__':
-    with open('config.yaml', 'r') as file:
+    with open('../config.yaml', 'r') as file:
         config = yaml.safe_load(file)
     root_path = config['DATA_ROOT']
     convert_data_to_coco_format(root_path, "train")
