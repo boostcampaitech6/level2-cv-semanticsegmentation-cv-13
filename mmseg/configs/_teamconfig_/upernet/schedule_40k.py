@@ -28,14 +28,14 @@ param_scheduler = [
         by_epoch=False)
 ]
 train_cfg = dict(
-    type='IterBasedTrainLoop', max_iters=32000, val_interval=640)
+    type='IterBasedTrainLoop', max_iters=64000, val_interval=1280)
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
 default_hooks = dict(
     timer=dict(type='IterTimerHook'),
     logger=dict(type='LoggerHook', interval=100, log_metric_by_epoch=False),
     param_scheduler=dict(type='ParamSchedulerHook'),
-    checkpoint=dict(type='CheckpointHook', by_epoch=False, interval=640),
+    checkpoint=dict(type='CheckpointHook', by_epoch=False, interval=3200),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     visualization=dict(type='SegVisualizationHook'))
 checkpoint_file = 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/swin/swin_large_patch4_window12_384_22k_20220412-6580f57d.pth'

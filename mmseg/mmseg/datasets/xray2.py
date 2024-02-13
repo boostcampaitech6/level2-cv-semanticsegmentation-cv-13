@@ -72,6 +72,25 @@ class XRayDataset2(BaseSegDataset):
         self.is_train = is_train
         
         super().__init__(**kwargs)
+    
+    # def load_data_list(self):
+    #     if self.is_train:
+    #         filenames = pngs[160:]
+    #         labelnames = jsons[160:]
+        
+    #     else:
+    #         filenames = pngs[:160]
+    #         labelnames =jsons[:160]
+        
+    #     data_list = []
+    #     for i, (img_path, ann_path) in enumerate(zip(filenames, labelnames)):
+    #         data_info = dict(
+    #             img_path=os.path.join(IMAGE_ROOT, img_path),
+    #             seg_map_path=os.path.join(LABEL_ROOT, ann_path),
+    #         )
+    #         data_list.append(data_info)
+        
+    #     return data_list
         
     def load_data_list(self):
         filenames = []
@@ -100,6 +119,7 @@ class XRayDataset2(BaseSegDataset):
             data_list.append(data_info)
         
         return data_list
+        
 
 @TRANSFORMS.register_module()
 class LoadXRayAnnotations(BaseTransform):
