@@ -21,6 +21,11 @@ optimizer:
   name: "adam"
   params: null
 
+# step, cosine, plateau
+scheduler:
+  name: ""
+  params: null
+
 # torchvision or smp
 TYPE: smp
 # torchvision: fcn, deeplab

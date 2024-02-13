@@ -33,6 +33,7 @@ from psuedo_label import *
 from augmentation import SobelFilter
 from loss import create_criterion
 from optimizer import create_optim
+from scheduler import create_sched
 
 
 CLASSES = [
@@ -137,7 +138,7 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
     return avg_dice
 
 
-def train(model, data_loader, val_loader, criterion, optimizer):
+def train(model, data_loader, val_loader, criterion, optimizer, scheduler, is_plateau):
     print(f'Start training..')
     set_seed()
     n_class = len(CLASSES)
@@ -181,6 +182,13 @@ def train(model, data_loader, val_loader, criterion, optimizer):
                 print(f"Save model in {SAVED_DIR}")
                 best_dice = dice
                 save_model(model)
+        
+        if scheduler:
+            if is_plateau:
+                if (epoch + 1) % VAL_EVERY == 0:
+                    scheduler.step(dice)
+            else:
+                scheduler.step()
 
 
 if __name__ == '__main__':
@@ -276,10 +284,21 @@ if __name__ == '__main__':
     # Optimizer를 정의합니다.
     optimizer = create_optim(optimizer_name, model, LR, **optimizer_params)
 
+    # Scheduler Config
+    scheduler_config = config['scheduler']
+    scheduler_name = scheduler_config['name']
+    scheduler_params = scheduler_config['params'] or {}
+
+    # Define Scheduler if available
+    scheduler = None
+    is_plateau = False
+    if scheduler_name != "":
+        scheduler, is_plateau = create_sched(scheduler_name, optimizer, NUM_EPOCHS, **scheduler_params)
+
     # 시드를 설정합니다.
     set_seed()
 
     CAMPER_ID = config['CAMPER_ID']
     wandb.init(project='Boost Camp Lv2-3',entity='frostings', name=f"{CAMPER_ID}-{EXP_NAME}", config=config)
     
-    train(model, train_loader, valid_loader, criterion, optimizer)
+    train(model, train_loader, valid_loader, criterion, optimizer, scheduler, is_plateau)
