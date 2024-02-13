@@ -16,6 +16,11 @@ loss:
   name: "bce_dice"
   params: null
 
+# adam, adamw, rmsprop, lion
+optimizer:
+  name: "adam"
+  params: null
+
 # torchvision or smp
 TYPE: smp
 # torchvision: fcn, deeplab

@@ -32,6 +32,7 @@ from dataloader import XRayDataset
 from psuedo_label import *
 from augmentation import SobelFilter
 from loss import create_criterion
+from optimizer import create_optim
 
 
 CLASSES = [
@@ -265,8 +266,13 @@ if __name__ == '__main__':
     # Criterion을 정의합니다.    
     criterion = create_criterion(loss_name, **loss_params)
 
+    # Optimizer Config
+    optimizer_config = config['optimizer']
+    optimizer_name = optimizer_config['name']
+    optimizer_params = optimizer_config['params'] or {}
+
     # Optimizer를 정의합니다.
-    optimizer = optim.Adam(params=model.parameters(), lr=LR, weight_decay=1e-6)
+    optimizer = create_optim(optimizer_name, model, LR, **optimizer_params)
 
     # 시드를 설정합니다.
     set_seed()
