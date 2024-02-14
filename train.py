@@ -30,8 +30,10 @@ import matplotlib.pyplot as plt
 
 from dataloader import XRayDataset
 from psuedo_label import *
-from augmentation import SobelFilter
 from loss import create_criterion
+from optimizer import create_optim
+from scheduler import create_sched
+from augmentation import create_augmentation
 
 
 CLASSES = [
@@ -136,12 +138,13 @@ def validation(epoch, model, data_loader, criterion, thr=0.5):
     return avg_dice
 
 
-def train(model, data_loader, val_loader, criterion, optimizer):
+def train(model, data_loader, val_loader, criterion, optimizer, scheduler, is_plateau):
     print(f'Start training..')
     set_seed()
     n_class = len(CLASSES)
     best_dice = 0.
-    
+
+    scaler = torch.cuda.amp.GradScaler(enabled=True)
     for epoch in range(NUM_EPOCHS):
         model.train()
 
@@ -149,14 +152,15 @@ def train(model, data_loader, val_loader, criterion, optimizer):
             # gpu 연산을 위해 device 할당합니다.
             images, masks = images.cuda(), masks.cuda()
             model = model.cuda()
-            
-            outputs = model(images)
-            
-            # loss를 계산합니다.
-            loss = criterion(outputs, masks)
             optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            
+            with torch.cuda.amp.autocast(enabled=True):
+                outputs = model(images)
+                # loss를 계산합니다.
+                loss = criterion(outputs, masks)
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
             
             # step 주기에 따라 loss를 출력합니다.
             if (step + 1) % 10 == 0:
@@ -178,6 +182,13 @@ def train(model, data_loader, val_loader, criterion, optimizer):
                 print(f"Save model in {SAVED_DIR}")
                 best_dice = dice
                 save_model(model)
+        
+        if scheduler:
+            if is_plateau:
+                if (epoch + 1) % VAL_EVERY == 0:
+                    scheduler.step(dice)
+            else:
+                scheduler.step()
 
 
 if __name__ == '__main__':
@@ -210,26 +221,25 @@ if __name__ == '__main__':
     clear_test_data_in_train_path(DATA_ROOT)
     if PSUEDOLABEL_FLAG:
         preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
-    
-    # resize
-    tf = A.Resize(RESIZE, RESIZE)
-    # tf = A.Compose([
-    #     SobelFilter(prob=0.5),
-    #     A.Resize(RESIZE, RESIZE),
-    # ])
+
+    augmentation_config = config['augmentation']
+    augmentation_name = augmentation_config['name']
+    augmentation_params = augmentation_config['params'] or {}
+    train_tf = create_augmentation(augmentation_name, resize=RESIZE, **augmentation_params)
+    valid_tf = create_augmentation('base', resize=RESIZE)
 
     train_dataset = XRayDataset(
         IMAGE_ROOT, 
         LABEL_ROOT, 
         is_train=True, 
-        transforms=tf,
+        transforms=train_tf,
         psuedo_flag=PSUEDOLABEL_FLAG,
     )
     valid_dataset = XRayDataset(
         IMAGE_ROOT, 
         LABEL_ROOT, 
         is_train=False, 
-        transforms=tf,
+        transforms=valid_tf,
     )
     
     if PSUEDOLABEL_FLAG:
@@ -265,8 +275,24 @@ if __name__ == '__main__':
     # Criterion을 정의합니다.    
     criterion = create_criterion(loss_name, **loss_params)
 
+    # Optimizer Config
+    optimizer_config = config['optimizer']
+    optimizer_name = optimizer_config['name']
+    optimizer_params = optimizer_config['params'] or {}
+
     # Optimizer를 정의합니다.
-    optimizer = optim.Adam(params=model.parameters(), lr=LR, weight_decay=1e-6)
+    optimizer = create_optim(optimizer_name, model, LR, **optimizer_params)
+
+    # Scheduler Config
+    scheduler_config = config['scheduler']
+    scheduler_name = scheduler_config['name']
+    scheduler_params = scheduler_config['params'] or {}
+
+    # Define Scheduler if available
+    scheduler = None
+    is_plateau = False
+    if scheduler_name != "":
+        scheduler, is_plateau = create_sched(scheduler_name, optimizer, NUM_EPOCHS, **scheduler_params)
 
     # 시드를 설정합니다.
     set_seed()
@@ -274,4 +300,4 @@ if __name__ == '__main__':
     CAMPER_ID = config['CAMPER_ID']
     wandb.init(project='Boost Camp Lv2-3',entity='frostings', name=f"{CAMPER_ID}-{EXP_NAME}", config=config)
     
-    train(model, train_loader, valid_loader, criterion, optimizer)
+    train(model, train_loader, valid_loader, criterion, optimizer, scheduler, is_plateau)

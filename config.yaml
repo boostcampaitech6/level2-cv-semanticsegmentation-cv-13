@@ -12,14 +12,28 @@ RESIZE: 512
 PSEUDO_LABEL: False
 OUTPUT_CSV_PATH: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/result/output.csv"
 
+augmentation:
+  name: "custom"
+  params: null
+
 loss:
-  name: "cross_entropy"
+  name: "bce_dice"
+  params: null
+
+# adam, adamw, rmsprop, lion
+optimizer:
+  name: "adam"
+  params: null
+
+# step, cosine, plateau
+scheduler:
+  name: ""
   params: null
 
 # torchvision or smp
-TYPE: torchvision
+TYPE: smp
 # torchvision: fcn, deeplab
 # smp: Unet, UnetPlusPlus, MAnet, Linknet, FPN, PSPNet, DeepLabV3, DeepLabV3Plus, PAN
-MODEL: fcn
+MODEL: UnetPlusPlus
 # https://github.com/qubvel/segmentation_models.pytorch?tab=readme-ov-file#encoders
-ENCODER: null
+ENCODER: efficientnet-b0
