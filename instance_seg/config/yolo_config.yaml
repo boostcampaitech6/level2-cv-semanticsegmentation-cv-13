@@ -3,14 +3,13 @@ wandb_option:
   entity: frostings
   name: temp
 train_option:
-  epochs: 200
-  imgsz: 1024
+  epochs: 50
+  imgsz: 640
   device: 0
-  batch: 8
-  workers: 8
-  close_mosaic: 10
+  batch: 4
+  workers: 2
   cos_lr: True
-  optimizer: Adam
+  optimizer: auto
 
 path: data  # dataset root dir
 train: yolo_train  # train images (relative to 'path') 4 images
