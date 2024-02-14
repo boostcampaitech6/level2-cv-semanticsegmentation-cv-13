@@ -30,10 +30,10 @@ import matplotlib.pyplot as plt
 
 from dataloader import XRayDataset
 from psuedo_label import *
-from augmentation import SobelFilter
 from loss import create_criterion
 from optimizer import create_optim
 from scheduler import create_sched
+from augmentation import create_augmentation
 
 
 CLASSES = [
@@ -221,26 +221,25 @@ if __name__ == '__main__':
     clear_test_data_in_train_path(DATA_ROOT)
     if PSUEDOLABEL_FLAG:
         preprocess(DATA_ROOT, config['OUTPUT_CSV_PATH'])
-    
-    # resize
-    tf = A.Resize(RESIZE, RESIZE)
-    # tf = A.Compose([
-    #     SobelFilter(prob=0.5),
-    #     A.Resize(RESIZE, RESIZE),
-    # ])
+
+    augmentation_config = config['augmentation']
+    augmentation_name = augmentation_config['name']
+    augmentation_params = augmentation_config['params'] or {}
+    train_tf = create_augmentation(augmentation_name, resize=RESIZE, **augmentation_params)
+    valid_tf = create_augmentation('base', resize=RESIZE)
 
     train_dataset = XRayDataset(
         IMAGE_ROOT, 
         LABEL_ROOT, 
         is_train=True, 
-        transforms=tf,
+        transforms=train_tf,
         psuedo_flag=PSUEDOLABEL_FLAG,
     )
     valid_dataset = XRayDataset(
         IMAGE_ROOT, 
         LABEL_ROOT, 
         is_train=False, 
-        transforms=tf,
+        transforms=valid_tf,
     )
     
     if PSUEDOLABEL_FLAG:

@@ -12,6 +12,10 @@ RESIZE: 512
 PSEUDO_LABEL: False
 OUTPUT_CSV_PATH: "/data/ephemeral/home/level2-cv-semanticsegmentation-cv-13/result/output.csv"
 
+augmentation:
+  name: "custom"
+  params: null
+
 loss:
   name: "bce_dice"
   params: null
