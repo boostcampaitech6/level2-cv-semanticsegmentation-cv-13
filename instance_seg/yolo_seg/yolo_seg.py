@@ -7,6 +7,7 @@ from tqdm import tqdm
 from ultralytics import YOLO
 import numpy as np
 import pandas as pd
+import albumentations as A
 
 
 CLASSES = [
@@ -47,8 +48,13 @@ def train(data_config_path: str):
         name=wandb_option["name"],
     )
     
-    model = YOLO("yolov8x-seg.pt")
     train_option = data_config["train_option"]
+    # custom_augment = A.Compose([
+    #     A.CLAHE(p=0.5),
+    #     A.Resize(train_option["imgsz"], train_option["imgsz"]),
+    #     A.Rotate(limit=30, p=0.5),
+    # ])
+    model = YOLO("yolov8x-seg.pt")
     
     # want to customize, See under page
     # https://github.com/ultralytics/ultralytics/blob/main/ultralytics/cfg/default.yaml
@@ -61,7 +67,7 @@ def train(data_config_path: str):
         workers=train_option["workers"],
         cos_lr=train_option["cos_lr"],
         optimizer=train_option["optimizer"],
-        mosaic=0.0,
+        # mosaic=1.0,
         fliplr=0.0,
         erasing=0.0,
         scale=0.0,
@@ -123,5 +129,5 @@ def inference():
         
     
 if __name__ == '__main__':
-    # train('config/yolo_config.yaml')
+    train('config/yolo_config.yaml')
     inference()

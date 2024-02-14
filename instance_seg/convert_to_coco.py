@@ -165,20 +165,20 @@ def yolo_to_coco(root_path: str, method: str, json_path: str):
         candits = [annot for annot in annotations if annot["image_id"] == img_id]
         for candit in candits:
             cls_id = candit["category_id"]
-            bbox = candit["bbox"]
-            bx, by, bw, bh = bbox
+            # bbox = candit["bbox"]
+            # bx, by, bw, bh = bbox
             
-            scaled_bx, scaled_by = bx / width, by / height
-            scaled_bw, scaled_bh = bw / width, bh / height
-            scaled_cx, scaled_cy = scaled_bx + scaled_bw / 2, scaled_by + scaled_bh / 2
-            scaled_bbox = [scaled_cx, scaled_cy, scaled_bw, scaled_bh]
+            # scaled_bx, scaled_by = bx / width, by / height
+            # scaled_bw, scaled_bh = bw / width, bh / height
+            # scaled_cx, scaled_cy = scaled_bx + scaled_bw / 2, scaled_by + scaled_bh / 2
+            # scaled_bbox = [scaled_cx, scaled_cy, scaled_bw, scaled_bh]
             
             seg = candit["segmentation"][0]
             scaled_seg = []
             for i in range(0, len(seg), 2):
                 x, y = seg[i], seg[i+1]
-                scaled_seg.append(x / width)
-                scaled_seg.append(y / height)
+                scaled_seg.append(round(x / width, 6))
+                scaled_seg.append(round(y / height, 6))
             
             with open(os.path.join(root_path, folder_name, "labels", new_label_name), "a") as f:
                 # f.write(f"{cls_id-1} {' '.join(map(str, scaled_bbox))} {' '.join(map(str, scaled_seg))}\n")
