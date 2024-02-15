@@ -1,0 +1,48 @@
+wandb_option:
+  project: Boost Camp Lv2-3
+  entity: frostings
+  name: T6030_yolo_seg_640_augment
+train_option:
+  epochs: 100
+  imgsz: 640
+  device: 0
+  batch: 4
+  workers: 2
+  cos_lr: True
+  optimizer: Adam
+
+path: data  # dataset root dir
+train: yolo_train  # train images (relative to 'path') 4 images
+val: yolo_valid  # val images (relative to 'path') 4 images
+test:  # test images (optional)
+
+names:
+  0: finger-1
+  1: finger-2
+  2: finger-3
+  3: finger-4
+  4: finger-5
+  5: finger-6
+  6: finger-7
+  7: finger-8
+  8: finger-9
+  9: finger-10
+  10: finger-11
+  11: finger-12
+  12: finger-13
+  13: finger-14
+  14: finger-15
+  15: finger-16
+  16: finger-17
+  17: finger-18
+  18: finger-19
+  19: Trapezium
+  20: Trapezoid
+  21: Capitate
+  22: Hamate
+  23: Scaphoid
+  24: Lunate
+  25: Triquetrum
+  26: Pisiform
+  27: Radius
+  28: Ulna

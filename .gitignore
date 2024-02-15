@@ -6,3 +6,5 @@ __pycache__
 model
 venv
 result
+runs
+*.pt
