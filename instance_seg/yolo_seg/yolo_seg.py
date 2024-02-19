@@ -68,10 +68,10 @@ def train(data_config_path: str):
         cos_lr=train_option["cos_lr"],
         optimizer=train_option["optimizer"],
         # mosaic=1.0,
-        fliplr=0.0,
-        erasing=0.0,
-        scale=0.0,
-        translate=0.0,
+        # fliplr=0.0,
+        # erasing=0.0,
+        # scale=0.0,
+        # translate=0.0,
     )
 
 def inference():
@@ -82,7 +82,7 @@ def inference():
     filename_and_class = []
 
     for idx, infer_image in tqdm(enumerate(infer_images)):
-        result = model.predict(infer_image, imgsz=640)[0]
+        result = model.predict(infer_image, imgsz=2048)[0]
         boxes = result.boxes.data.cpu().numpy()
         scores, classes = boxes[:, 4].tolist(), boxes[:, 5].astype(np.uint8).tolist()
         masks = result.masks.xy
@@ -92,12 +92,14 @@ def inference():
         img_name = infer_image.split("/")[-1]
         
         is_checked = [False] * 29
-        csv_idx = 0
-        for c, s, mask_pts in datas:
+        csv_idx, data_idx = 0, 0
+        while data_idx < len(datas):
+            c, s, mask_pts = datas[data_idx]
+            # 동일한게 있으면 pass
             if is_checked[c]:
+                data_idx += 1
                 continue
             
-            is_checked[csv_idx] = True
             empty_mask = np.zeros((2048, 2048), dtype=np.uint8)
             if c == csv_idx:
                 is_checked[c] = True
@@ -106,13 +108,13 @@ def inference():
                 rle = encode_mask_to_rle(empty_mask)
                 rles.append(rle)
                 filename_and_class.append(f"{IND2CLASS[c]}_{img_name}")
+                data_idx += 1
             else:
                 rle = encode_mask_to_rle(empty_mask)
                 rles.append(rle)
-                filename_and_class.append(f"{IND2CLASS[c]}_{img_name}")
-            csv_idx += 1                
+                filename_and_class.append(f"{IND2CLASS[csv_idx]}_{img_name}")
+            csv_idx += 1
             
-    
     classes, filename = zip(*[x.split("_") for x in filename_and_class])
     image_name = [os.path.basename(f) for f in filename]
     df = pd.DataFrame({
@@ -123,9 +125,8 @@ def inference():
 
     if not os.path.exists('./result'):                                                           
         os.makedirs('./result')
-    f_name = 'yolo_seg_output.csv'
+    f_name = 'yolo_seg_2048_output.csv'
     df.to_csv(os.path.join('result', f_name), index=False)
-        
         
     
 if __name__ == '__main__':

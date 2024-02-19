@@ -1,15 +1,15 @@
 wandb_option:
   project: Boost Camp Lv2-3
   entity: frostings
-  name: T6030_yolo_seg_640_augment
+  name: T6030_yolo_seg_2048
 train_option:
   epochs: 100
-  imgsz: 640
+  imgsz: 2048
   device: 0
-  batch: 4
-  workers: 2
+  batch: 2
+  workers: 8
   cos_lr: True
-  optimizer: Adam
+  optimizer: auto 
 
 path: data  # dataset root dir
 train: yolo_train  # train images (relative to 'path') 4 images
