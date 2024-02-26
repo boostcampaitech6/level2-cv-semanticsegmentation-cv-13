@@ -1,0 +1,71 @@
+data_preprocessor = dict(
+    type='SegDataPreProcessor',
+    mean=[30.85484335154295, 30.85484335154295, 30.85484335154295],
+    std=[41.85731344565145, 41.85731344565145, 41.85731344565145],
+    bgr_to_rgb=True,
+    pad_val=0,
+    seg_pad_val=255,
+    size=(512, 512))
+model = dict(
+    type='EncoderDecoderWithoutArgmax',
+    data_preprocessor=dict(
+        type='SegDataPreProcessor',
+        mean=[30.85484335154295, 30.85484335154295, 30.85484335154295],
+        std=[41.85731344565145, 41.85731344565145, 41.85731344565145],
+        bgr_to_rgb=True,
+        pad_val=0,
+        seg_pad_val=255,
+        size=(512, 512)),
+    pretrained=None,
+    backbone=dict(
+        type='SwinTransformer',
+        pretrain_img_size=384,
+        embed_dims=192,
+        patch_size=4,
+        window_size=12,
+        mlp_ratio=4,
+        depths=[2, 2, 18, 2],
+        num_heads=[6, 12, 24, 48],
+        strides=(4, 2, 2, 2),
+        out_indices=(0, 1, 2, 3),
+        qkv_bias=True,
+        qk_scale=None,
+        patch_norm=True,
+        drop_rate=0.0,
+        attn_drop_rate=0.0,
+        drop_path_rate=0.3,
+        use_abs_pos_embed=False,
+        act_cfg=dict(type='GELU'),
+        # norm_cfg=dict(type='LN', requires_grad=True),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint=
+            'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/swin/swin_large_patch4_window12_384_22k_20220412-6580f57d.pth'
+        )),
+    decode_head=dict(
+        type='UPerHeadWithoutAccuracy',
+        in_channels=[192, 384, 768, 1536],
+        in_index=[0, 1, 2, 3],
+        pool_scales=(1, 2, 3, 6),
+        channels=512,
+        dropout_ratio=0.1,
+        num_classes=29,
+        # norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        loss_decode=dict(
+            type='FocalLoss', use_sigmoid=True, loss_weight=1.0)),
+    auxiliary_head=dict(
+        type='FCNHeadWithoutAccuracy',
+        in_channels=768,
+        in_index=2,
+        channels=256,
+        num_convs=1,
+        concat_input=False,
+        dropout_ratio=0.1,
+        num_classes=29,
+        # norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        loss_decode=dict(
+            type='FocalLoss', use_sigmoid=True, loss_weight=0.4)),
+    train_cfg=dict(),
+    test_cfg=dict(mode='whole'))

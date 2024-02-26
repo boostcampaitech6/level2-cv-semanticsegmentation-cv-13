@@ -1,0 +1,10 @@
+data
+eda/vis_res
+*.csv
+wandb
+__pycache__
+model
+venv
+result
+runs
+*.pt
