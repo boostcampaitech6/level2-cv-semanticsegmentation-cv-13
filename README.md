@@ -120,10 +120,10 @@ python train.py
 
 ### 최종 순위
 - Public Score
-<p align = "center"> <img src="https://github.com/boostcampaitech6/level2-cv-semanticsegmentation-cv-13/assets/87365666/fffa8f31-e636-4b14-90ea-cf6785edb474"> <p/>
+<p align = "center"> <img src="https://github.com/boostcampaitech6/level2-cv-semanticsegmentation-cv-13/assets/87365666/4db3df1a-489d-4290-a7ab-8a9b1acb22fa"> <p/>
 
 - Private Score
-<p align = "center"> <img src="https://github.com/boostcampaitech6/level2-cv-semanticsegmentation-cv-13/assets/87365666/4db3df1a-489d-4290-a7ab-8a9b1acb22fa"> <p/>
+<p align = "center"> <img src="https://github.com/boostcampaitech6/level2-cv-semanticsegmentation-cv-13/assets/87365666/fffa8f31-e636-4b14-90ea-cf6785edb474"> <p/>
 
 ---
 
